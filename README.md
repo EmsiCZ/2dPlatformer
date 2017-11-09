@@ -1,2 +1,2 @@
 <h1>2dPlatformer</h1>
-<a href="http://homel.vsb.cz/~ols0042/tamz2/"> ZDE </a>
+Informations about aplication and development<a href="http://homel.vsb.cz/~ols0042/tamz2/"> HERE </a>
