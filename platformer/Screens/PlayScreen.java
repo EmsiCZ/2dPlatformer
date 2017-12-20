@@ -2,6 +2,8 @@ package com.olszar.platformer.Screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -60,7 +62,10 @@ public class PlayScreen implements Screen{
     private World world;
     private Box2DDebugRenderer b2dr;
 
+    //sprites
     private Player player;
+
+    private Music music;
 
     public PlayScreen(PlatformerGame game) {
         atlas = new TextureAtlas("Player.pack");
@@ -90,6 +95,10 @@ public class PlayScreen implements Screen{
         b2dr.SHAPE_STATIC.set(1,0,0,1);
 
         world.setContactListener(new WorldContactListener());
+
+        music = PlatformerGame.manager.get("audio/music/Grasslands Theme.mp3", Music.class);
+        music.setLooping(true);
+        music.play();
     }
 
     public TextureAtlas getAtlas(){
@@ -123,8 +132,11 @@ public class PlayScreen implements Screen{
             player.b2body.applyLinearImpulse(new Vector2(-0.15f, 0), player.b2body.getWorldCenter(), true);
         else
             player.b2body.applyLinearImpulse(new Vector2(0, 0), player.b2body.getWorldCenter(), false);
-        if(controller.isUpPressed() && player.b2body.getLinearVelocity().y == 0)
+        if(controller.isUpPressed() && player.b2body.getLinearVelocity().y == 0){
             player.b2body.applyLinearImpulse(new Vector2(0, 9f), player.b2body.getWorldCenter(), true);
+            PlatformerGame.manager.get("audio/sounds/jump.wav", Sound.class).play();
+        }
+
 
 
 
@@ -138,6 +150,7 @@ public class PlayScreen implements Screen{
         world.step(1/60f, 6, 2);
 
         player.update(dt);
+        hud.update(dt);
 
         gamecam.position.x = player.b2body.getPosition().x;
 
