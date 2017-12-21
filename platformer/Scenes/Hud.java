@@ -32,7 +32,7 @@ public class Hud implements Disposable{
     static Label lifeLabel;
 
     public Hud(SpriteBatch sb){
-        worldTimer = 300;
+        worldTimer = 100;
         timeCount = 0;
         score = 0;
         lifes = 3;
@@ -84,6 +84,18 @@ public class Hud implements Disposable{
     public static void addScore(int value){
         score += value;
         scoreLabel.setText(String.format("%03d", score));
+    }
+
+    public int getFinalScore(){
+        return worldTimer + (10 * score);
+    }
+
+    public boolean timeEnd(){
+        return worldTimer < 1;
+    }
+
+    public int getLifes(){
+        return lifes;
     }
 
     @Override

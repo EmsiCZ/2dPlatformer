@@ -17,6 +17,7 @@ import com.olszar.platformer.PlatformerGame;
 import com.olszar.platformer.Screens.PlayScreen;
 import com.olszar.platformer.Sprites.Brick;
 import com.olszar.platformer.Sprites.CoinBrick;
+import com.olszar.platformer.Sprites.Goal;
 import com.olszar.platformer.Sprites.Slime;
 
 /**
@@ -107,6 +108,13 @@ public class B2WorldCreator {
         for(MapObject object : map.getLayers().get(6).getObjects().getByType(RectangleMapObject.class)){
             Rectangle rect = ((RectangleMapObject) object).getRectangle();
             slimes.add(new Slime(screen, rect.getX() / PlatformerGame.PPM, rect.getY() / PlatformerGame.PPM));
+        }
+
+        //GOAL
+        for(MapObject object : map.getLayers().get(7).getObjects().getByType(RectangleMapObject.class)){
+            Rectangle rect = ((RectangleMapObject) object).getRectangle();
+
+            new Goal(screen, rect);
         }
 
     }

@@ -99,8 +99,8 @@ public class Slime extends Enemy {
         //Head of Slime
         PolygonShape head =  new PolygonShape();
         Vector2[] vertice2 = new Vector2[4];
-        vertice2[0] = new Vector2(-28, 48).scl(1 / PlatformerGame.PPM);
-        vertice2[1] = new Vector2(28, 48).scl(1 / PlatformerGame.PPM);
+        vertice2[0] = new Vector2(-23, 48).scl(1 / PlatformerGame.PPM);
+        vertice2[1] = new Vector2(23, 48).scl(1 / PlatformerGame.PPM);
         vertice2[2] = new Vector2(-15, 20).scl(1 / PlatformerGame.PPM);
         vertice2[3] = new Vector2(15, 20).scl(1 / PlatformerGame.PPM);
         head.set(vertice2);

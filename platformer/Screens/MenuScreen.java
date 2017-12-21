@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.olszar.platformer.PlatformerGame;
@@ -22,7 +23,7 @@ public class MenuScreen implements Screen {
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
 
-        TextButton button = new TextButton("My button", new Skin(Gdx.files.internal("skin/glassy-ui.json")));
+        TextButton button = new TextButton("New game", new Skin(Gdx.files.internal("skins/glassy-ui.json")));
         button.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -30,7 +31,13 @@ public class MenuScreen implements Screen {
             }
         });
 
-        stage.addActor(button);
+        Table table = new Table();
+        table.center();
+        table.setFillParent(true);
+
+        table.add(button);
+
+        stage.addActor(table);
     }
     @Override
     public void show() {

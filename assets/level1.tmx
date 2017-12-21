@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="right-down" width="240" height="13" tilewidth="128" tileheight="128" nextobjectid="94">
+<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="right-down" width="240" height="13" tilewidth="128" tileheight="128" nextobjectid="98">
  <tileset firstgid="1" name="spritesheet_complete" tilewidth="128" tileheight="128" spacing="2" margin="1" tilecount="465" columns="31">
   <image source="Spritesheets/spritesheet_complete.png" width="4096" height="2048"/>
  </tileset>
@@ -109,5 +109,8 @@
   <object id="87" x="6272" y="1280" width="128" height="128"/>
   <object id="92" x="8448" y="1152" width="128" height="128"/>
   <object id="93" x="4352" y="1152" width="128" height="128"/>
+ </objectgroup>
+ <objectgroup name="goals">
+  <object id="97" x="9002.42" y="947.515" width="37.0909" height="37.0909"/>
  </objectgroup>
 </map>

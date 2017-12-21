@@ -22,7 +22,7 @@ import com.olszar.platformer.Screens.PlayScreen;
  * Created by lubos on 17.11.2016.
  */
 public class Player extends Sprite {
-    public enum State { JUMPING, STANDING, RUNNING, DEAD };
+    public enum State { JUMPING, STANDING, RUNNING, DEAD, WON };
     public State currentState;
     public State previousState;
     public World world;
@@ -34,6 +34,7 @@ public class Player extends Sprite {
     private float stateTimer;
     private boolean runningRight;
     private boolean playerIsDead;
+    private boolean playerWon;
 
     public Player(PlayScreen screen){
         super(screen.getAtlas().findRegion("player_spritesheet"));
@@ -110,6 +111,8 @@ public class Player extends Sprite {
     private State getState() {
         if(playerIsDead)
             return State.DEAD;
+        else if(playerWon)
+            return State.WON;
         else if(b2body.getLinearVelocity().y != 0)
             return  State.JUMPING;
         else if(b2body.getLinearVelocity().x != 0)
@@ -133,7 +136,8 @@ public class Player extends Sprite {
                 PlatformerGame.BRICK_BIT |
                 PlatformerGame.OBJECT_BIT |
                 PlatformerGame.ENEMY_BIT |
-                PlatformerGame.ENEMY_HEAD_BIT;
+                PlatformerGame.ENEMY_HEAD_BIT |
+                PlatformerGame.GOAL_BIT;
 
         fdef.shape = shape;
         b2body.createFixture(fdef).setUserData(this);
@@ -163,5 +167,10 @@ public class Player extends Sprite {
         for(Fixture fixture : b2body.getFixtureList())
             fixture.setFilterData(filter);
         b2body.applyLinearImpulse(new Vector2(0, 4f), b2body.getWorldCenter(), true);
+    }
+
+    public void win(){
+        PlatformerGame.manager.get("audio/music/Grasslands Theme.mp3", Music.class).stop();
+        playerWon = true;
     }
 }

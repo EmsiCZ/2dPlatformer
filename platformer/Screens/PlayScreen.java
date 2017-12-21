@@ -186,8 +186,12 @@ public class PlayScreen implements Screen{
         game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
         hud.stage.draw();
 
-        if(gameOver()) {
+        if(gameOver() || hud.timeEnd()) {
             game.setScreen(new GameOverScreen(game));
+            dispose();
+        }
+        else if(winner()){
+            game.setScreen(new WinnerScreen(game, hud.getFinalScore()));
             dispose();
         }
 
@@ -199,6 +203,14 @@ public class PlayScreen implements Screen{
         }
         return false;
     }
+
+    public boolean winner(){
+        if(player.currentState == Player.State.WON){
+            return true;
+        }
+        return false;
+    }
+
 
     @Override
     public void resize(int width, int height) {

@@ -58,6 +58,12 @@ public class WorldContactListener implements ContactListener{
                 ((Enemy)fixA.getUserData()).reverseVelocity(true, false);
                 ((Enemy)fixB.getUserData()).reverseVelocity(true, false);
                 break;
+            case PlatformerGame.PLAYER_BIT | PlatformerGame.GOAL_BIT:
+                if(fixA.getFilterData().categoryBits == PlatformerGame.PLAYER_BIT)
+                    ((Player)fixA.getUserData()).win();
+                else
+                    ((Player)fixB.getUserData()).win();
+                break;
         }
     }
 
