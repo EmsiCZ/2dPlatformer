@@ -144,6 +144,7 @@ public class PlayScreen implements Screen{
         for (Enemy enemy: creator.getSlimes())
             enemy.update(dt);
 
+        hud.setLifes(player.getLifes());
         hud.update(dt);
 
         if(player.currentState != Player.State.DEAD){

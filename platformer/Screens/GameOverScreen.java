@@ -3,6 +3,7 @@ package com.olszar.platformer.Screens;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -23,6 +24,7 @@ public class GameOverScreen implements Screen {
     private Stage stage;
 
     private Game game;
+    private Music music;
 
     public GameOverScreen(Game game){
         this.game = game;
@@ -36,7 +38,7 @@ public class GameOverScreen implements Screen {
         table.setFillParent(true);
 
         Label gameOverLabel = new Label("GAME OVER", font);
-        Label playAgainLabel = new Label("Tap to Play Again", font);
+        Label playAgainLabel = new Label("Tap to return to Main Menu", font);
 
         gameOverLabel.setFontScale(5);
         playAgainLabel.setFontScale(3);
@@ -46,6 +48,10 @@ public class GameOverScreen implements Screen {
         table.add(playAgainLabel).expandX().padTop(50f);
 
         stage.addActor(table);
+
+        music = PlatformerGame.manager.get("audio/music/Desert Theme.mp3", Music.class);
+        music.setLooping(true);
+        music.play();
     }
 
     @Override
@@ -56,7 +62,8 @@ public class GameOverScreen implements Screen {
     @Override
     public void render(float delta) {
         if(Gdx.input.justTouched()){
-            game.setScreen(new PlayScreen((PlatformerGame) game));
+            music.stop();
+            game.setScreen(new MenuScreen((PlatformerGame) game));
             dispose();
         }
 

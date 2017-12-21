@@ -1,6 +1,7 @@
 package com.olszar.platformer.Sprites;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.World;
@@ -20,6 +21,9 @@ public class Brick extends InteractiveTileObject {
 
     @Override
     public void onHeadHit() {
+        if(fixture.getFilterData().categoryBits == PlatformerGame.COINBRICK_BIT){
+            PlatformerGame.manager.get("audio/sounds/brick.ogg", Sound.class).play();
+        }
         setCategoryFilter(PlatformerGame.DESTROYED_BIT);
         getCell().setTile(null);
     }

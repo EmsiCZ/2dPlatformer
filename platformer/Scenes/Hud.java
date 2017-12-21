@@ -73,7 +73,7 @@ public class Hud implements Disposable{
 
     public void update(float dt){
         timeCount += dt;
-        if(timeCount >= 1){
+        if(timeCount >= 1) {
             worldTimer--;
             countdownLabel.setText(String.format("%03d", worldTimer));
             timeCount = 0;
@@ -94,8 +94,9 @@ public class Hud implements Disposable{
         return worldTimer < 1;
     }
 
-    public int getLifes(){
-        return lifes;
+    public static void setLifes(int value){
+        lifes = value;
+        lifeLabel.setText(String.format("%03d", lifes));
     }
 
     @Override

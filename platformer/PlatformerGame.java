@@ -27,6 +27,7 @@ public class PlatformerGame extends Game {
 	public static final short ENEMY_BIT = 64;
 	public static final short ENEMY_HEAD_BIT = 128;
 	public static final short GOAL_BIT = 256;
+	public static final short HURT_BIT = 512;
 
 	public SpriteBatch batch;
 
@@ -37,10 +38,15 @@ public class PlatformerGame extends Game {
 		batch = new SpriteBatch();
 		manager = new AssetManager();
 		manager.load("audio/music/Grasslands Theme.mp3", Music.class);
+		manager.load("audio/music/Worldmap Theme.mp3", Music.class);
+		manager.load("audio/music/Desert Theme.mp3", Music.class);
+		manager.load("audio/music/Mushroom Theme.mp3", Music.class);
 		manager.load("audio/sounds/jump.wav", Sound.class);
 		manager.load("audio/sounds/pickup_coin.m4a", Sound.class);
 		manager.load("audio/sounds/hit.m4a", Sound.class);
 		manager.load("audio/sounds/stomp.m4a", Sound.class);
+		manager.load("audio/sounds/brick.ogg", Sound.class);
+		manager.load("audio/sounds/Falling.mp3", Sound.class);
 		manager.finishLoading();
 
 		setScreen(new MenuScreen(this));

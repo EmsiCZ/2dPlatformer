@@ -3,6 +3,7 @@ package com.olszar.platformer.Screens;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -23,6 +24,7 @@ public class WinnerScreen implements Screen {
     private Stage stage;
 
     private Game game;
+    private Music music;
     public WinnerScreen(Game game, int finalScore){
         this.game = game;
         viewport = new FitViewport(PlatformerGame.V_WIDTH, PlatformerGame.V_HEIGHT, new OrthographicCamera());
@@ -45,6 +47,10 @@ public class WinnerScreen implements Screen {
         table.add(playAgainLabel).expandX().padTop(50f);
 
         stage.addActor(table);
+
+        music = PlatformerGame.manager.get("audio/music/Mushroom Theme.mp3", Music.class);
+        music.setLooping(true);
+        music.play();
     }
     @Override
     public void show() {
@@ -54,6 +60,7 @@ public class WinnerScreen implements Screen {
     @Override
     public void render(float delta) {
         if(Gdx.input.justTouched()){
+            music.stop();
             game.setScreen(new MenuScreen((PlatformerGame) game));
             dispose();
         }
@@ -85,6 +92,6 @@ public class WinnerScreen implements Screen {
 
     @Override
     public void dispose() {
-
+        stage.dispose();
     }
 }

@@ -22,7 +22,7 @@ import com.olszar.platformer.Screens.PlayScreen;
  * Created by lubos on 17.11.2016.
  */
 public class Player extends Sprite {
-    public enum State { JUMPING, STANDING, RUNNING, DEAD, WON };
+    public enum State { JUMPING, STANDING, RUNNING, DEAD, WON, HURT };
     public State currentState;
     public State previousState;
     public World world;
@@ -34,7 +34,9 @@ public class Player extends Sprite {
     private float stateTimer;
     private boolean runningRight;
     private boolean playerIsDead;
+    private boolean playerIsHurt;
     private boolean playerWon;
+    public int lifes;
 
     public Player(PlayScreen screen){
         super(screen.getAtlas().findRegion("player_spritesheet"));
@@ -43,6 +45,7 @@ public class Player extends Sprite {
         previousState = State.STANDING;
         stateTimer = 0;
         runningRight = true;
+        lifes = 3;
 
         Array<TextureRegion> frames = new Array<TextureRegion>();
         for(int i = 0; i < 3; i++){
@@ -72,6 +75,22 @@ public class Player extends Sprite {
     public void update(float dt){
         setPosition(b2body.getPosition().x - getWidth() / 2, b2body.getPosition().y - getHeight() / 2);
         setRegion(getFrame(dt));
+
+        if(playerIsHurt && stateTimer > 2){
+            playerIsHurt = false;
+
+            Filter filter = new Filter();
+            filter.categoryBits = PlatformerGame.PLAYER_BIT;
+            filter.maskBits = PlatformerGame.GROUND_BIT |
+                    PlatformerGame.COINBRICK_BIT |
+                    PlatformerGame.BRICK_BIT |
+                    PlatformerGame.OBJECT_BIT |
+                    PlatformerGame.ENEMY_BIT |
+                    PlatformerGame.ENEMY_HEAD_BIT |
+                    PlatformerGame.GOAL_BIT;
+            for(Fixture fixture : b2body.getFixtureList())
+                fixture.setFilterData(filter);
+        }
     }
 
     public TextureRegion getFrame(float dt){
@@ -80,6 +99,7 @@ public class Player extends Sprite {
         TextureRegion region;
         switch(currentState){
             case DEAD:
+            case HURT:
                 region = playerDead;
                 break;
             case RUNNING:
@@ -109,7 +129,9 @@ public class Player extends Sprite {
     }
 
     private State getState() {
-        if(playerIsDead)
+        if(playerIsHurt)
+            return State.HURT;
+        else if(playerIsDead)
             return State.DEAD;
         else if(playerWon)
             return State.WON;
@@ -159,18 +181,42 @@ public class Player extends Sprite {
     }
 
     public void hit(){
-        PlatformerGame.manager.get("audio/music/Grasslands Theme.mp3", Music.class).stop();
-        PlatformerGame.manager.get("audio/sounds/hit.m4a", Sound.class).play();
-        playerIsDead = true;
-        Filter filter = new Filter();
-        filter.maskBits = PlatformerGame.NOTHING_BIT;
-        for(Fixture fixture : b2body.getFixtureList())
-            fixture.setFilterData(filter);
-        b2body.applyLinearImpulse(new Vector2(0, 4f), b2body.getWorldCenter(), true);
+        if(lifes > 1){
+            PlatformerGame.manager.get("audio/sounds/hit.m4a", Sound.class).play();
+            playerIsHurt = true;
+            Filter filter = new Filter();
+            filter.categoryBits = PlatformerGame.HURT_BIT;
+            filter.maskBits = PlatformerGame.GROUND_BIT |
+                    PlatformerGame.COINBRICK_BIT |
+                    PlatformerGame.BRICK_BIT |
+                    PlatformerGame.OBJECT_BIT |
+                    PlatformerGame.ENEMY_BIT |
+                    PlatformerGame.ENEMY_HEAD_BIT |
+                    PlatformerGame.GOAL_BIT;
+            for(Fixture fixture : b2body.getFixtureList())
+                fixture.setFilterData(filter);
+        }
+        else{
+            PlatformerGame.manager.get("audio/music/Grasslands Theme.mp3", Music.class).stop();
+            PlatformerGame.manager.get("audio/sounds/Falling.mp3", Sound.class).play();
+
+            playerIsDead = true;
+            Filter filter = new Filter();
+            filter.maskBits = PlatformerGame.NOTHING_BIT;
+            for(Fixture fixture : b2body.getFixtureList())
+                fixture.setFilterData(filter);
+            b2body.applyLinearImpulse(new Vector2(0, 4f), b2body.getWorldCenter(), true);
+        }
+
+        lifes--;
     }
 
     public void win(){
         PlatformerGame.manager.get("audio/music/Grasslands Theme.mp3", Music.class).stop();
         playerWon = true;
+    }
+
+    public int getLifes(){
+        return lifes;
     }
 }
