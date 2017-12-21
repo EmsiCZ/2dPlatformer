@@ -33,7 +33,9 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.olszar.platformer.PlatformerGame;
 import com.olszar.platformer.Scenes.Controller;
 import com.olszar.platformer.Scenes.Hud;
+import com.olszar.platformer.Sprites.Enemy;
 import com.olszar.platformer.Sprites.Player;
+import com.olszar.platformer.Sprites.Slime;
 import com.olszar.platformer.Tools.B2WorldCreator;
 import com.olszar.platformer.Tools.WorldContactListener;
 
@@ -61,6 +63,7 @@ public class PlayScreen implements Screen{
     //Box2d variables
     private World world;
     private Box2DDebugRenderer b2dr;
+    private B2WorldCreator creator;
 
     //sprites
     private Player player;
@@ -68,7 +71,7 @@ public class PlayScreen implements Screen{
     private Music music;
 
     public PlayScreen(PlatformerGame game) {
-        atlas = new TextureAtlas("Player.pack");
+        atlas = new TextureAtlas("animations2.pack");
 
         this.game = game;
         gamecam = new OrthographicCamera();
@@ -87,9 +90,9 @@ public class PlayScreen implements Screen{
         world = new World(new Vector2(0, -10), true);
         b2dr = new Box2DDebugRenderer();
 
-        new B2WorldCreator(world, map);
+        creator = new B2WorldCreator(this);
 
-        player = new Player(world, this);
+        player = new Player(this);
 
         //cervene okraje
         b2dr.SHAPE_STATIC.set(1,0,0,1);
@@ -99,6 +102,8 @@ public class PlayScreen implements Screen{
         music = PlatformerGame.manager.get("audio/music/Grasslands Theme.mp3", Music.class);
         music.setLooping(true);
         music.play();
+
+        //slime = new Slime(this, 21f, 6f);
     }
 
     public TextureAtlas getAtlas(){
@@ -111,34 +116,20 @@ public class PlayScreen implements Screen{
     }
 
     public void handleInput(float dt){
-        /*Vector3 touchPoint = new Vector3();
-        for (int i = 0; i < 5; i++) {
-            if (!Gdx.input.isTouched(i)) continue;
-            guicam.unproject(touchPoint.set(Gdx.input.getX(i), Gdx.input.getY(i), 0));
-            if(leftControl.contains(touchPoint.x, touchPoint.y) && player.b2body.getLinearVelocity().x >= -2){
-                player.b2body.applyLinearImpulse(new Vector2(-0.1f, 0), player.b2body.getWorldCenter(), true);
+
+        //player.b2body.applyForceToCenter(1.0f, 0.0f, true);
+        if(player.currentState != Player.State.DEAD){
+            if(controller.isRightPressed() && player.b2body.getLinearVelocity().x <= 4)
+                player.b2body.applyLinearImpulse(new Vector2(0.15f, 0), player.b2body.getWorldCenter(), true);
+            else if(controller.isLeftPressed() && player.b2body.getLinearVelocity().x >= -4)
+                player.b2body.applyLinearImpulse(new Vector2(-0.15f, 0), player.b2body.getWorldCenter(), true);
+            else
+                player.b2body.applyLinearImpulse(new Vector2(0, 0), player.b2body.getWorldCenter(), false);
+            if(controller.isUpPressed() && player.b2body.getLinearVelocity().y == 0){
+                player.b2body.applyLinearImpulse(new Vector2(0, 9f), player.b2body.getWorldCenter(), true);
+                PlatformerGame.manager.get("audio/sounds/jump.wav", Sound.class).play();
             }
-            else if(rightControl.contains(touchPoint.x, touchPoint.y) && player.b2body.getLinearVelocity().x <= 2){
-                player.b2body.applyLinearImpulse(new Vector2(0.1f, 0), player.b2body.getWorldCenter(), true);
-            }
-            else if(upControl.contains(touchPoint.x, touchPoint.y)){
-                player.b2body.applyLinearImpulse(new Vector2(0, 4f), player.b2body.getWorldCenter(), true);
-            }
-        }*/
-        player.b2body.applyForceToCenter(1.0f, 0.0f, true);
-        if(controller.isRightPressed() && player.b2body.getLinearVelocity().x <= 4)
-            player.b2body.applyLinearImpulse(new Vector2(0.15f, 0), player.b2body.getWorldCenter(), true);
-        else if(controller.isLeftPressed() && player.b2body.getLinearVelocity().x >= -4)
-            player.b2body.applyLinearImpulse(new Vector2(-0.15f, 0), player.b2body.getWorldCenter(), true);
-        else
-            player.b2body.applyLinearImpulse(new Vector2(0, 0), player.b2body.getWorldCenter(), false);
-        if(controller.isUpPressed() && player.b2body.getLinearVelocity().y == 0){
-            player.b2body.applyLinearImpulse(new Vector2(0, 9f), player.b2body.getWorldCenter(), true);
-            PlatformerGame.manager.get("audio/sounds/jump.wav", Sound.class).play();
         }
-
-
-
 
 
     }
@@ -150,9 +141,14 @@ public class PlayScreen implements Screen{
         world.step(1/60f, 6, 2);
 
         player.update(dt);
+        for (Enemy enemy: creator.getSlimes())
+            enemy.update(dt);
+
         hud.update(dt);
 
-        gamecam.position.x = player.b2body.getPosition().x;
+        if(player.currentState != Player.State.DEAD){
+            gamecam.position.x = player.b2body.getPosition().x;
+        }
 
         gamecam.update();
         renderer.setView(gamecam);
@@ -174,22 +170,48 @@ public class PlayScreen implements Screen{
         renderer.render();
 
         //Render Box2DDebugLines
-        b2dr.render(world, gamecam.combined);
+        //b2dr.render(world, gamecam.combined);
 
         game.batch.setProjectionMatrix(gamecam.combined);
         game.batch.begin();
         player.draw(game.batch);
+        for (Enemy enemy: creator.getSlimes()){
+            enemy.draw(game.batch);
+            if(enemy.getX() < player.getX() + 900 / PlatformerGame.PPM)
+                enemy.b2body.setActive(true);
+        }
+
         game.batch.end();
 
         game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
         hud.stage.draw();
 
+        if(gameOver()) {
+            game.setScreen(new GameOverScreen(game));
+            dispose();
+        }
+
+    }
+
+    public boolean gameOver(){
+        if(player.currentState == Player.State.DEAD && player.getStateTimer() > 3){
+            return true;
+        }
+        return false;
     }
 
     @Override
     public void resize(int width, int height) {
         gamePort.update(width, height);
         controller.resize(width, height);
+    }
+
+    public TiledMap getMap(){
+        return map;
+    }
+
+    public World getWorld(){
+        return world;
     }
 
     @Override

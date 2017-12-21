@@ -10,13 +10,14 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.olszar.platformer.PlatformerGame;
 import com.olszar.platformer.Scenes.Hud;
+import com.olszar.platformer.Screens.PlayScreen;
 
 /**
  * Created by lubos on 27.11.2016.
  */
 public class CoinBrick extends InteractiveTileObject {
-    public CoinBrick(World world, TiledMap map, Rectangle bounds){
-        super(world, map, bounds);
+    public CoinBrick(PlayScreen screen, Rectangle bounds){
+        super(screen, bounds);
         fixture.setUserData(this);
         setCategoryFilter(PlatformerGame.COINBRICK_BIT);
     }
